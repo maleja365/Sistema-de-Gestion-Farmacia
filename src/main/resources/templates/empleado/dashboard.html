@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Empleado - FarmaciApp</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; }
+
+        .navbar {
+            background: #1a6b3c; color: white;
+            padding: 14px 28px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .navbar h1 { font-size: 20px; }
+        .navbar-right { display: flex; align-items: center; gap: 16px; }
+        .navbar a {
+            color: white; text-decoration: none;
+            background: rgba(255,255,255,0.15);
+            padding: 7px 14px; border-radius: 6px; font-size: 14px;
+        }
+        .navbar a:hover { background: rgba(255,255,255,0.25); }
+
+        .contenido { padding: 28px; }
+
+        .barra-acciones {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+        }
+        .barra-acciones h2 { color: #1a6b3c; font-size: 22px; }
+
+        .btn-nuevo {
+            background: #1a6b3c; color: white;
+            padding: 10px 20px; border-radius: 8px;
+            text-decoration: none; font-size: 14px; font-weight: 600;
+        }
+        .btn-nuevo:hover { background: #145c32; }
+
+        .buscador {
+            display: flex; gap: 8px;
+        }
+        .buscador input {
+            padding: 9px 14px; border: 1px solid #ddd;
+            border-radius: 8px; font-size: 14px; width: 220px;
+        }
+        .buscador button {
+            padding: 9px 16px; background: #2980b9;
+            color: white; border: none; border-radius: 8px;
+            cursor: pointer; font-size: 14px;
+        }
+
+        /* Cards grid */
+        .grid-productos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white; border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            overflow: hidden; transition: transform .2s;
+        }
+        .card:hover { transform: translateY(-4px); }
+
+        .card-img {
+            width: 100%; height: 160px;
+            object-fit: cover; background: #e8f5e9;
+            display: flex; align-items: center;
+            justify-content: center; font-size: 48px;
+        }
+        .card-img img { width: 100%; height: 160px; object-fit: cover; }
+
+        .card-body { padding: 16px; }
+        .card-categoria {
+            font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px;
+            color: #1a6b3c; margin-bottom: 6px;
+        }
+        .card-nombre { font-size: 16px; font-weight: 700; color: #222; margin-bottom: 6px; }
+        .card-desc { font-size: 13px; color: #666; margin-bottom: 12px; line-height: 1.4; }
+
+        .card-footer {
+            display: flex; justify-content: space-between;
+            align-items: center; padding: 12px 16px;
+            border-top: 1px solid #f0f0f0; background: #fafafa;
+        }
+        .precio { font-size: 18px; font-weight: 700; color: #1a6b3c; }
+        .stock { font-size: 12px; color: #888; }
+        .stock span { font-weight: 700; color: #333; }
+
+        .card-acciones { display: flex; gap: 8px; padding: 0 16px 14px; }
+        .btn-editar {
+            flex: 1; padding: 8px; text-align: center;
+            background: #2980b9; color: white;
+            border-radius: 7px; text-decoration: none; font-size: 13px;
+        }
+        .btn-eliminar {
+            flex: 1; padding: 8px; text-align: center;
+            background: #e74c3c; color: white;
+            border-radius: 7px; text-decoration: none; font-size: 13px;
+        }
+        .btn-editar:hover { background: #1f6699; }
+        .btn-eliminar:hover { background: #c0392b; }
+
+        .sin-productos {
+            text-align: center; padding: 60px;
+            color: #999; grid-column: 1/-1;
+        }
+        .sin-productos p { font-size: 18px; margin-top: 12px; }
+
+        .alerta-busqueda {
+            background: #e8f4fd; border-left: 4px solid #2980b9;
+            padding: 12px 16px; border-radius: 6px;
+            margin-bottom: 20px; color: #1a5276;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .alerta-busqueda a { color: #2980b9; text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <h1>🏥 FarmaciApp — Panel Empleado</h1>
+    <div class="navbar-right">
+        <span>Hola, <strong th:text="${usuario}">empleado</strong></span>
+		<form th:action="@{/logout}" method="post" style="display:inline;">
+		    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+		    <button type="submit" style="
+		        background: rgba(255,255,255,0.15);
+		        color: white; border: none; cursor: pointer;
+		        padding: 7px 14px; border-radius: 6px; font-size: 14px;">
+		        Cerrar sesión
+		    </button>
+		</form>
+    </div>
+</nav>
+
+<div class="contenido">
+
+    <div class="barra-acciones">
+        <h2>Productos de la Farmacia</h2>
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+            <form class="buscador" th:action="@{/empleado/producto/buscar}" method="get">
+                <input type="text" name="nombre" placeholder="Buscar producto..."
+                       th:value="${busqueda}"/>
+                <button type="submit">Buscar</button>
+            </form>
+            <a th:href="@{/empleado/producto/nuevo}" class="btn-nuevo">+ Nuevo producto</a>
+        </div>
+    </div>
+
+    <!-- Alerta si hay búsqueda activa -->
+    <div class="alerta-busqueda" th:if="${busqueda != null}">
+        <span>Resultados para: <strong th:text="${busqueda}"></strong></span>
+        <a th:href="@{/empleado/dashboard}">Ver todos</a>
+    </div>
+
+    <!-- Grid de cards -->
+    <div class="grid-productos">
+
+        <div class="sin-productos" th:if="${#lists.isEmpty(productos)}">
+            <div style="font-size:48px;">📦</div>
+            <p>No hay productos registrados</p>
+        </div>
+
+        <div class="card" th:each="p : ${productos}">
+
+            <!-- Imagen o ícono por defecto -->
+            <div class="card-img">
+                <img th:if="${p.imagenUrl != null and !p.imagenUrl.isEmpty()}"
+                     th:src="${p.imagenUrl}" th:alt="${p.nombre}"/>
+                <span th:unless="${p.imagenUrl != null and !p.imagenUrl.isEmpty()}">💊</span>
+            </div>
+
+            <div class="card-body">
+                <div class="card-categoria" th:text="${p.categoria}">Categoría</div>
+                <div class="card-nombre" th:text="${p.nombre}">Nombre</div>
+                <div class="card-desc" th:text="${p.descripcion}">Descripción</div>
+            </div>
+
+            <div class="card-footer">
+                <div>
+                    <div class="precio" th:text="'$' + ${#numbers.formatDecimal(p.precio, 1, 'COMMA', 0, 'POINT')}">$0</div>
+                    <div class="stock">Stock: <span th:text="${p.stock}">0</span> unidades</div>
+                </div>
+            </div>
+
+            <div class="card-acciones">
+                <a th:href="@{/empleado/producto/editar/{id}(id=${p.idProducto})}"
+                   class="btn-editar">✏️ Editar</a>
+                <a th:href="@{/empleado/producto/eliminar/{id}(id=${p.idProducto})}"
+                   class="btn-eliminar"
+                   onclick="return confirm('¿Eliminar este producto?')">🗑️ Eliminar</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

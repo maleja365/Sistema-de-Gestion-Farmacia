@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Producto - FarmaciApp</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; }
+        .navbar {
+            background: #1a6b3c; color: white;
+            padding: 14px 28px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .navbar h1 { font-size: 20px; }
+        .navbar a {
+            color: white; text-decoration: none;
+            background: rgba(255,255,255,0.15);
+            padding: 7px 14px; border-radius: 6px; font-size: 14px;
+        }
+        .contenido {
+            max-width: 620px; margin: 40px auto; padding: 0 20px;
+        }
+        .card-form {
+            background: white; border-radius: 14px;
+            padding: 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .card-form h2 { color: #1a6b3c; margin-bottom: 24px; font-size: 22px; }
+        .campo { margin-bottom: 18px; }
+        label {
+            display: block; margin-bottom: 6px;
+            font-weight: 600; color: #333; font-size: 14px;
+        }
+        input, textarea, select {
+            width: 100%; padding: 11px 14px;
+            border: 1px solid #ddd; border-radius: 8px;
+            font-size: 15px; font-family: inherit;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none; border-color: #1a6b3c;
+            box-shadow: 0 0 0 3px rgba(26,107,60,0.1);
+        }
+        textarea { resize: vertical; min-height: 90px; }
+        .fila-dos { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .acciones { display: flex; gap: 12px; margin-top: 24px; }
+        .btn-guardar {
+            flex: 1; padding: 12px;
+            background: #1a6b3c; color: white;
+            border: none; border-radius: 8px;
+            font-size: 16px; font-weight: 600; cursor: pointer;
+        }
+        .btn-guardar:hover { background: #145c32; }
+        .btn-cancelar {
+            flex: 1; padding: 12px; text-align: center;
+            background: #ecf0f1; color: #555;
+            border-radius: 8px; text-decoration: none;
+            font-size: 16px; font-weight: 600;
+        }
+        .btn-cancelar:hover { background: #dde1e3; }
+        .preview-img {
+            width: 100%; height: 140px; object-fit: cover;
+            border-radius: 8px; margin-top: 10px;
+            border: 1px solid #eee; display: none;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <h1>🏥 FarmaciApp</h1>
+    <a th:href="@{/empleado/dashboard}">← Volver al panel</a>
+</nav>
+
+<div class="contenido">
+    <div class="card-form">
+        <h2 th:text="${accion} + ' producto'">Producto</h2>
+
+        <form th:action="@{/empleado/producto/guardar}"
+              th:object="${producto}" method="post">
+
+            <!-- ID oculto para edición -->
+            <input type="hidden" th:field="*{idProducto}"/>
+
+            <div class="campo">
+                <label>Nombre del producto</label>
+                <input type="text" th:field="*{nombre}"
+                       placeholder="Ej: Acetaminofen 500mg" required/>
+            </div>
+
+            <div class="campo">
+                <label>Descripción</label>
+                <textarea th:field="*{descripcion}"
+                          placeholder="Describe el producto..."></textarea>
+            </div>
+
+            <div class="campo">
+                <label>Categoría</label>
+                <select th:field="*{categoria}">
+                    <option value="">-- Selecciona --</option>
+                    <option value="Medicamento">Medicamento</option>
+                    <option value="Vitamina">Vitamina</option>
+                    <option value="Suplemento">Suplemento</option>
+                    <option value="Cuidado personal">Cuidado personal</option>
+                    <option value="Equipos medicos">Equipos médicos</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+
+            <div class="fila-dos">
+                <div class="campo">
+                    <label>Precio ($)</label>
+                    <input type="number" th:field="*{precio}"
+                           placeholder="0.00" step="0.01" min="0" required/>
+                </div>
+                <div class="campo">
+                    <label>Stock (unidades)</label>
+                    <input type="number" th:field="*{stock}"
+                           placeholder="0" min="0" required/>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label>URL de imagen (opcional)</label>
+                <input type="text" th:field="*{imagenUrl}"
+                       placeholder="https://..." id="urlImagen"
+                       oninput="previewImagen(this.value)"/>
+                <img id="preview" class="preview-img" alt="Preview"/>
+            </div>
+
+            <div class="acciones">
+                <button type="submit" class="btn-guardar">💾 Guardar producto</button>
+                <a th:href="@{/empleado/dashboard}" class="btn-cancelar">Cancelar</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+function previewImagen(url) {
+    const img = document.getElementById('preview');
+    if (url && url.startsWith('http')) {
+        img.src = url;
+        img.style.display = 'block';
+    } else {
+        img.style.display = 'none';
+    }
+}
+// Mostrar preview si ya tiene imagen (modo editar)
+window.onload = () => {
+    const url = document.getElementById('urlImagen').value;
+    if (url) previewImagen(url);
+}
+</script>
+
+</body>
+</html>

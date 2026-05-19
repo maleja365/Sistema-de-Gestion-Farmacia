@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Empleado</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f6f8; }
+        .navbar {
+            background: #1a6b3c; color: white;
+            padding: 16px 32px; display: flex;
+            justify-content: space-between; align-items: center;
+        }
+        .navbar h2 { font-size: 20px; }
+        .navbar a {
+            color: white; text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px; border-radius: 6px;
+        }
+        .content { padding: 40px; }
+        h3 { color: #1a6b3c; margin-bottom: 20px; }
+        .cards { display: flex; gap: 20px; flex-wrap: wrap; }
+        .card {
+            background: white; border-radius: 10px;
+            padding: 24px; width: 200px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center; cursor: pointer;
+        }
+        .card:hover { transform: translateY(-3px); transition: .2s; }
+        .card .icon { font-size: 36px; margin-bottom: 10px; }
+        .card p { color: #333; font-weight: 600; }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <h2>🏥 FarmaciApp — Panel Empleado</h2>
+    <div>
+        Hola, <strong th:text="${usuario}">usuario</strong> &nbsp;|&nbsp;
+		<form th:action="@{/logout}" method="post" style="display:inline;">
+		    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+		    <button type="submit" style="
+		        background: rgba(255,255,255,0.15);
+		        color: white; border: none; cursor: pointer;
+		        padding: 7px 14px; border-radius: 6px; font-size: 14px;">
+		        Cerrar sesión
+		    </button>
+		</form>
+	    </div>
+</div>
+
+<div class="content">
+    <h3>¿Qué deseas gestionar hoy?</h3>
+    <div class="cards">
+        <div class="card">
+            <div class="icon">💊</div>
+            <p>Productos / Medicamentos</p>
+        </div>
+        <div class="card">
+            <div class="icon">📦</div>
+            <p>Inventario</p>
+        </div>
+        <div class="card">
+            <div class="icon">🛵</div>
+            <p>Pedidos a Domicilio</p>
+        </div>
+        <div class="card">
+            <div class="icon">🧾</div>
+            <p>Facturas</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

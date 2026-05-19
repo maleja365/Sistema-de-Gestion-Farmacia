@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tienda - FarmaciApp</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f6f8; }
+        .navbar {
+            background: #2980b9; color: white;
+            padding: 16px 32px; display: flex;
+            justify-content: space-between; align-items: center;
+        }
+        .navbar a {
+            color: white; text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px; border-radius: 6px;
+        }
+        .content { padding: 40px; }
+        h3 { color: #2980b9; }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <h2>🛒 FarmaciApp — Tienda</h2>
+    <div>
+        Hola, <strong th:text="${usuario}">cliente</strong> &nbsp;|&nbsp;
+		<form th:action="@{/logout}" method="post" style="display:inline;">
+				    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+				    <button type="submit" style="
+				        background: rgba(255,255,255,0.15);
+				        color: white; border: none; cursor: pointer;
+				        padding: 7px 14px; border-radius: 6px; font-size: 14px;">
+				        Cerrar sesión
+				    </button>
+				</form>
+    </div>
+</div>
+
+<div class="content">
+    <h3>Bienvenido a nuestra farmacia en línea</h3>
+    <p>Aquí podrás ver los productos, agregarlos al carrito y pedir a domicilio. 
+       ¡Próximamente disponible! 🚀</p>
+</div>
+</body>
+</html>
